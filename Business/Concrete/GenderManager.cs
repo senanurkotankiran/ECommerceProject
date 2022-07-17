@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -16,28 +17,29 @@ namespace Business.Concrete
             _genderDal = genderDal;
         }
 
-        public void Add(Gender gender)
+        public IResult Add(Gender gender)
         {
             _genderDal.Add(gender);
-            Console.WriteLine("Cinsiyet eklendi! " + gender.GenderName);
+            return new SuccessResult();
+
         }
 
-        public void Delete(Gender gender)
+        public IResult Delete(Gender gender)
         {
             _genderDal.Delete(gender);
-            Console.WriteLine("Cinsiyet silindi! " + gender.GenderName);
+            return new SuccessResult();
         }
 
-        public List<Gender> GetAll()
+        public IDataResult<List<Gender>> GetAll()
         {
-            return _genderDal.GetAll();
+            return new SuccessDataResult<List<Gender>> ( _genderDal.GetAll());
 
         }
 
-        public void Update(Gender gender)
+        public IResult Update(Gender gender)
         {
             _genderDal.Update(gender);
-            Console.WriteLine("Cinsiyet güncellendi! " + gender.GenderName);
+            return new SuccessResult();
         }
     }
 }

@@ -1,4 +1,9 @@
 ﻿using Business.Abstract;
+using Business.Contants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -17,43 +22,43 @@ namespace Business.Concrete
             _productDal = productDal;
         }
 
-        public void Add(Product product)
+        [ValidationAspect(typeof(ProductValidator))]
+        public IResult Add(Product product)
         {
-            if (product.ProductName == null || product.ProductName.Length < 2)
-            {
-                Console.WriteLine("Ürün adı 2 haneden büyük olmalıdır!");
-            }
-            else
-            {
-                _productDal.Add(product);
-                Console.WriteLine("Ürün eklendi " + product.ProductName);
-            }
-        }
-            
 
-        public void Delete(Product product)
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
+
+        }
+
+
+        public IResult Delete(Product product)
         {
             _productDal.Delete(product);
+            return new SuccessResult(Messages.ProductDeleted);
         }
 
-        public List<Product> GetById(int id)
+
+
+        public IDataResult<List<Product>> GetAll()
         {
-            return _productDal.GetAll(p => p.ProductId == id);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductListed);
         }
 
-        public List<Product> GetAll()
-        {
-            return _productDal.GetAll();
-        }
-
-        public void Update(Product product)
+        public IResult Update(Product product)
         {
             _productDal.Update(product);
+            return new SuccessResult(Messages.ProductUpdated);
         }
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.GetProductDetails();
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+
+        public IDataResult<Product> GetById(int id)
+        {
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == id));
         }
     }
 }
